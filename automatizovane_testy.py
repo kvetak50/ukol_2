@@ -88,7 +88,6 @@ def pridat_ukol(tabulka='ukoly', nazev='', popis=''):
 def test_pridat_ukol():
     vymazat_testovaci_data()  # Vymažeme testovací data před testem
 
-    # Příklad přidání platného úkolu
     pridat_ukol(nazev="Testovací úkol", popis="Popis testovacího úkolu")
     connection = pripojeni_db(test_db=True)
     cursor = connection.cursor()
