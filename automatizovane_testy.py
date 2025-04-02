@@ -24,12 +24,12 @@ def smaz_testovaci_databazi():
 
 import mysql.connector
 
-@pytest.fixture(scope="session", autouse=True)
-def priprav_testovaci_db():
-    vytvor_testovaci_databazi()
-    setup_test_db()
-    yield
-    smaz_testovaci_databazi()
+@pytest.fixture(scope="session", autouse=True)  #fixture, priprav_testovaci_db se vyvolá automaticky
+def priprav_testovaci_db():                     #samotná funkce
+    vytvor_testovaci_databazi()                 #vytvoří databázi
+    setup_test_db()                             #tvorba tabulky a vložení dat
+    yield                                       #zde je něco jako provedení všech testů a až skončí, bude se pokračovat v následujícím řádku
+    smaz_testovaci_databazi()                   #smazat databázi
 
 from main import pridat_ukol, aktualizovat_ukol, odstranit_ukol, pripojeni_db
 
@@ -71,22 +71,22 @@ def test_db():
     vymazat_testovaci_data()
 
 # Funkce pro přidání úkolu
-def pridat_ukol(tabulka='ukoly', nazev='', popis=''):
-    connection = pripojeni_db(test_db=True)
+def pridat_ukol(tabulka='ukoly', nazev='', popis=''):           #definice funkce
+    connection = pripojeni_db(test_db=True)                     #připojení k databázi
     if connection:
-        cursor = connection.cursor()
-        if not nazev or not popis:
+        cursor = connection.cursor()                            #vytvoření kurzoru
+        if not nazev or not popis:                              #kontrola, jestli vstupy nejsou prázdná hodnota
             print("Název a popis úkolu jsou povinné!")
             return
-        cursor.execute("INSERT INTO ukoly (nazev, popis, stav, datum_vytvoreni) VALUES (%s, %s, 'Nezahájeno', NOW())",
+        cursor.execute("INSERT INTO ukoly (nazev, popis, stav, datum_vytvoreni) VALUES (%s, %s, 'Nezahájeno', NOW())",      #nový úkol
                        (nazev, popis))
-        connection.commit()
-        cursor.close()
-        connection.close()
+        connection.commit()                 #potvrzení úkolu
+        cursor.close()                      #konec kurzoru
+        connection.close()                  #konec připojení
 
 # Test pro přidání úkolu (pozitivní)
-def test_pridat_ukol():
-    vymazat_testovaci_data()  # Vymažeme testovací data před testem
+def test_pridat_ukol():                     #stejná logika jako při přidání úkolu
+    vymazat_testovaci_data()                #vymažeme testovací data před testem
 
     pridat_ukol(nazev="Testovací úkol", popis="Popis testovacího úkolu")
     connection = pripojeni_db(test_db=True)
